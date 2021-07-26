@@ -12,14 +12,15 @@ public class PoLandingPage {
 	/**
 	* Region Variables
 	*/
-	public WebDriver driver;
-	private  static final String xpathOneApp = "//div[contains(@id, 'al-menu-dropdown-apps-id-')] //one-app-launcher-menu-item[.='$AppName']";
 	
 	@FindBy (xpath = "//button[contains(@class, 'slds-button slds-icon-waffle_')]")
-	private WebElement waffleButton;
+	private WebElement waffleMenuButton;
 	
 	@FindBy (xpath = "//div[contains(@id, 'al-menu-dropdown-apps-id-')] //one-app-launcher-menu-item")
 	private List <WebElement> waffleOptions;
+	
+	public WebDriver driver;
+	private  static final String xpathWaffleApp = "//div[contains(@id, 'al-menu-dropdown-apps-id-')] //one-app-launcher-menu-item[.='$AppName']";
 	
 	/**
 	* Region Constructor
@@ -31,17 +32,17 @@ public class PoLandingPage {
 	/**
 	* Region Getters
 	*/
-	public WebElement getWaffleButton () {
-		return waffleButton;
+	public WebElement getWaffleMenuButton () {
+		return waffleMenuButton;
 	}
 	
 	public List<WebElement>  getWaffleOptions () {
 		return waffleOptions;
 	}
 	
-	public WebElement getOneApp (String appName) {
-		WebElement app = driver.findElement(By.xpath(xpathOneApp.replace("$AppName", appName))); //Within path string argument expected by "By.xpath()"  a text replacement is done 
-		return app;
+	public WebElement getWaffleApp (String appName) {
+		WebElement ret = driver.findElement(By.xpath(xpathWaffleApp.replace("$AppName", appName))); //Within path string argument expected by "By.xpath()"  a text replacement is done 
+		return ret;
 	}
 	
 }
