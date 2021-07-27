@@ -3,6 +3,7 @@ package stepDefinitions;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import cucumber.api.java.en.*;
 import cucumber.api.junit.Cucumber;
@@ -81,14 +82,15 @@ public class NavigateTabs extends DriverFactory {
     	poAP.getOneTab("Accounts").click();
     	poAP.getNewBtn("New").click();
     	System.out.println("Hice click en boton new");
+    	
+    	w.until(ExpectedConditions.visibilityOf(poPF.getFormBtnCancel()));
     	poPF.getFormBtnCancel().click();
+    	
     	System.out.println("Hice click en cancel");
     	
     	//Access "Contacts" tab and complete actions
     	poAP.getOneTab("Contacts").click();
-    	Thread.sleep(30);
     	poAP.getNewBtn("New").click();
-    	Thread.sleep(30);
     	poPF.getFormBtnCancel().click();
 
     	//Access "Cases" tab and complete actions
