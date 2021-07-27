@@ -6,6 +6,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
 
 public class PoLandingPage {
 	
@@ -13,13 +14,14 @@ public class PoLandingPage {
 	* Region Variables
 	*/
 	
+	public WebDriver driver;
+	
 	@FindBy (xpath = "//button[contains(@class, 'slds-button slds-icon-waffle_')]")
 	private WebElement waffleMenuButton;
 	
 	@FindBy (xpath = "//div[contains(@id, 'al-menu-dropdown-apps-id-')] //one-app-launcher-menu-item")
 	private List <WebElement> waffleOptions;
 	
-	public WebDriver driver;
 	private  static final String xpathWaffleApp = "//div[contains(@id, 'al-menu-dropdown-apps-id-')] //one-app-launcher-menu-item[.='$AppName']";
 	
 	/**
@@ -27,6 +29,7 @@ public class PoLandingPage {
 	*/
 	public PoLandingPage(WebDriver driver) {
 		this.driver=driver;
+		PageFactory.initElements(driver, this);
 	}
 	
 	/**

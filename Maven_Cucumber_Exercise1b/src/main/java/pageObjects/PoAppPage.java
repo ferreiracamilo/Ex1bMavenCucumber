@@ -6,6 +6,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
 
 public class PoAppPage {
 	
@@ -14,12 +15,11 @@ public class PoAppPage {
 	*/
 	public WebDriver driver;
 	
-	//Mozilla works perfectly withou ancestor part, however Chrome and Opera won't work otherwise
-	private  static final String xpathOneTab = "//one-app-nav-bar-item-root //span[.='$TabName'] /ancestor::one-app-nav-bar-item-root";
+	private  static final String xpathOneTab = "//one-app-nav-bar-item-root //span[.='$TabName'] /ancestor::one-app-nav-bar-item-root"; //Mozilla works perfectly withou ancestor part, however Chrome and Opera won't work otherwise
 	private static final String tdByInnerText = "//table[@role='grid'] /tbody /tr /td /span //span[.='$InnerText']";
 	private static final String thByInnerText = "//table[@role='grid'] /tbody /tr /th /span //a[.='$InnerText']";
-	private static final String tdByInnerTextThAndTdNumber = "//table[@role='grid'] /tbody /tr /th /span //a[.='$InnerTex'] /ancestor::tr /td[$ColumnNumber]";
-	private static final String tdMenuBtn = "//table[@role='grid'] /tbody /tr /th /span //a[.='$InnerTex'] /ancestor::tr /td[last()]";
+	private static final String tdByInnerTextThAndTdNumber = "//table[@role='grid'] /tbody /tr /th /span //a[.='$InnerText'] /ancestor::tr /td[$ColumnNumber]";
+	private static final String tdMenuBtn = "//table[@role='grid'] /tbody /tr /th /span //a[.='$InnerText'] /ancestor::tr /td[last()]";
 	private static final String tdMenuInnerBtn = "//div[@role='menu'] //div[@title='$Action'] /ancestor::a";
 	
 	@FindBy (xpath = "//button[contains(text(),'Cancel')]")
@@ -30,14 +30,16 @@ public class PoAppPage {
 	
 	@FindBy (xpath = "//one-app-nav-bar-item-root")
 	private List <WebElement> tabOptions;
-		 
-	 private  static final String xpathBtnNew = "//div[@title='$btnTitle']";
-	 
+	
+	//private  static final String xpathBtnNew = "//div[@title='$btnTitle']";
+	private  static final String xpathBtnNew = "//a[@title='$btnTitle']";
+	
 	 /**
 	 * Region Constructor
 	 */
 	public PoAppPage(WebDriver driver) {
 		this.driver=driver;
+		PageFactory.initElements(driver, this);
 	}
 	
 	/**
@@ -45,9 +47,8 @@ public class PoAppPage {
 	*/
 	
 	 /**
-		* Get a specific tab within an App by indicating its inner text
+		* Get all tabs within in an app
 		* <br><b>You must click in an app before using this method</b>
-		* @param tabName refers to tab innertext
 		*/
 	public List<WebElement>  getTabOptions () {
 		return tabOptions;
@@ -69,7 +70,7 @@ public class PoAppPage {
 	* @param innerText
 	*/
 	public WebElement getNewBtn (String innerText) {
-		WebElement btn = driver.findElement(By.xpath(xpathBtnNew.replace("$LabelName", innerText)));
+		WebElement btn = driver.findElement(By.xpath(xpathBtnNew.replace("$btnTitle", innerText)));
 		return btn;
 	}
 	
@@ -103,7 +104,7 @@ public class PoAppPage {
 	*/
 	public WebElement getTdByInnerTextThAndTdNumber (String thInnerText, int tdColumnNum) {
 		String path =tdByInnerTextThAndTdNumber;
-		path = path.replace("$InnerTex", thInnerText);
+		path = path.replace("$InnerText", thInnerText);
 		path = path.replace("$ColumnNumber", Integer.toString(tdColumnNum));
 		 WebElement ret = driver.findElement(By.xpath(path));
 		return ret;

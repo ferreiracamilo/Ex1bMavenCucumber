@@ -20,19 +20,29 @@ import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.opera.OperaDriver;
 import org.openqa.selenium.opera.OperaOptions;
 
-public class base {
+public class DriverFactory {
 	public WebDriver driver;
-	public Properties prop;
+	//public Properties prop; //Will be commented until prop are being use within InitilizeDriver
 
-	public WebDriver initializeDriver() throws IOException {
+	 /**
+	* Initialize driver
+	* @param browserName // values -> chrome,firefox,opera
+	*/
+	public WebDriver initializeDriver(String browserName) throws IOException {
 
+		/*
+		 //CHANGED TO BE DONE THROUGH ARGUMENT IN CUCUMBER
+		 
 		prop = new Properties();
 		FileInputStream fis = new FileInputStream(System.getProperty("user.dir")+"\\src\\main\\java\\resources\\data.properties");
 
 		prop.load(fis);
 		String browserName = prop.getProperty("browser");
 		System.out.println("Browser running is" + browserName); //can be commented, could be a potential log4j in future
-
+		
+		*/
+		
+		
 		if (browserName.equals("chrome")) {
 			System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"\\resources\\chromedriver.exe"); //drivertype and driver exe location
 			
@@ -63,6 +73,7 @@ public class base {
 		}
 
 		driver.manage().timeouts().implicitlyWait(120, TimeUnit.SECONDS);
+		driver.manage().window().maximize();
 		return driver;
 
 	}
