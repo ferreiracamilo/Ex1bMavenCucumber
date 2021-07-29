@@ -1,12 +1,21 @@
 package pageObjects;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
+import java.util.Properties;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class PoAppPage {
 	
@@ -14,13 +23,29 @@ public class PoAppPage {
 	* Region Variables
 	*/
 	public WebDriver driver;
+	public WebDriverWait wait; //Temporary to be decide if to be implemented permanently or not
 	
-	private  static final String xpathOneTab = "//one-app-nav-bar-item-root //span[.='$TabName'] /ancestor::one-app-nav-bar-item-root"; //Mozilla works perfectly withou ancestor part, however Chrome and Opera won't work otherwise
-	private static final String tdByInnerText = "//table[@role='grid'] /tbody /tr /td /span //span[.='$InnerText']";
-	private static final String thByInnerText = "//table[@role='grid'] /tbody /tr /th /span //a[.='$InnerText']";
-	private static final String tdByInnerTextThAndTdNumber = "//table[@role='grid'] /tbody /tr /th /span //a[.='$InnerText'] /ancestor::tr /td[$ColumnNumber]";
-	private static final String tdMenuBtn = "//table[@role='grid'] /tbody /tr /th /span //a[.='$InnerText'] /ancestor::tr /td[last()]";
-	private static final String tdMenuInnerBtn = "//div[@role='menu'] //div[@title='$Action'] /ancestor::a";
+	private  static final String xpathBtnNew = "//ul[contains(@class, 'branding-actions slds-button-group')] //li[@class='slds-button slds-button--neutral'] //a[@title='$btnTitle'] //ancestor::li"; //Try with ancestor li and without it
+	private  static final String xpathOneTab = "//one-app-nav-bar-item-root[@data-assistive-id='operationId'] //a[contains(@href,'/lightning/') and @tabindex='0'] //span[.='$TabName'] //ancestor::one-app-nav-bar-item-root";
+	private static final String thByInnerTextList = "//table[@role='grid'] /tbody /tr /th /span //a[.='$InnerText']";
+	private static final String thByInnerText = "(//table[@role='grid'] /tbody /tr /th /span //a[.='$InnerText'])[$Index]";
+	private static final String tdUniqueThNColumnIndex = "(//table[@role='grid'] /tbody /tr /th /span //a[.='$InnerText'] /ancestor::tr /td[$ColumnNumber])[$Index]";
+	private static final String tdMenuBtnBythInnerText = "(//table[@role='grid'] /tbody /tr /th /span //a[.='$InnerText'] /ancestor::tr /td[last()])[$Index]";
+	private static final String tdMenuBtnByIndex = "(//table[@role='grid'] //tbody //tr //th //span //a /ancestor::tr /td[last()])[$Index]";
+	private static final String tdMenuInnerBtn = "//div[contains(@class,'visible')] //div[@role='menu'] //div[@title='$Action'] /ancestor::a";
+	private static final String tabNotLoadedURL = "https://$NameDomain-dev-ed.lightning.force.com/lightning/o/$NameTab/home";
+	private static final String appNotLoadedURL = "https://$NameDomain-dev-ed.lightning.force.com/one.app";
+	
+	@FindBy (xpath = "//table[@role='grid'] /tbody /tr /th /span //a")
+	private List<WebElement> thList;
+	
+	//If you request to delete a record account pop up will show displaying this button
+	@FindBy (xpath = "//div[@class='modal-footer slds-modal__footer'] //button[.='Delete']")
+	private WebElement confirmDeleteBTN;
+	
+	//After editing, creating, deleting (after clicking on confirmDeleteBTN) is needed to close success confirmation dialog
+	@FindBy (xpath = "//div[contains(@class, 'slds-theme--success slds-notify')] //button[contains(@class,'slds-button slds-button_icon toastClose')]")
+	private WebElement closeConfirmSucessBTN;
 	
 	@FindBy (xpath = "//button[contains(text(),'Cancel')]")
 	private WebElement iFrameCancelBTN;
@@ -28,23 +53,57 @@ public class PoAppPage {
 	@FindBy (xpath = "//div[@class='windowViewMode-normal oneContent active lafPageHost'] //iframe")
 	private WebElement iFrameWindow;
 	
-	@FindBy (xpath = "//one-app-nav-bar-item-root")
+	//Had to change this xpath from shorten way to this one, otherwise would not work
+	//one-app-nav-bar[contains(@class, 'slds-has-flexi')] /nav /div /one-app-nav-bar-item-root
+	//div[@role='list'] //one-app-nav-bar-item-root
+	@FindBy (xpath = "//one-app-nav-bar-item-root[@data-assistive-id='operationId'] //a[contains(@href,'/lightning/') and @tabindex='0'] //span")
 	private List <WebElement> tabOptions;
-	
-	//private  static final String xpathBtnNew = "//div[@title='$btnTitle']";
-	private  static final String xpathBtnNew = "//a[@title='$btnTitle']";
 	
 	 /**
 	 * Region Constructor
 	 */
 	public PoAppPage(WebDriver driver) {
 		this.driver=driver;
+		this.wait =new WebDriverWait(this.driver, 40);
 		PageFactory.initElements(driver, this);
 	}
 	
 	/**
 	* Region Getters
 	*/
+	
+	 /**
+	* Get delete confirmation button after requesting to delete an account record, contact record, etc
+	* <br><b>You must request to delete a record before using this method</b>
+	*/
+	public WebElement getConfirmDeleteBTN   () {
+		return confirmDeleteBTN;
+	}
+	
+	/**
+	* After editing, creating, deleting  is needed to close success confirmation dialog
+	* DELETE CASE: Bare in mind dialog won't appear until suppression is confirmed with button obtained from method getConfirmDeleteBTN()
+	* <br><b>You must complete a record manipulation successfully to use this method</b>
+	*/
+	public WebElement getcloseConfirmSucessBTN () {
+		return closeConfirmSucessBTN;
+	}
+	
+	/**
+	* Take into consideration that is suggested to do a brief thread sleep or similar
+	* <br>until button is properly loaded
+	*/
+	public WebElement getiFrameCancelBTN() {
+		return iFrameCancelBTN;
+	}
+	
+	/**
+	* Take into consideration that is suggested to do a brief thread sleep or similar
+	* <br>after getting out from an iframe to avoid duplicity issue due to load charges
+	*/
+	public WebElement getiFrameWindow() {
+		return iFrameWindow;
+	}
 	
 	 /**
 		* Get all tabs within in an app
@@ -75,75 +134,178 @@ public class PoAppPage {
 	}
 	
 	/**
-	* Get a specific td from tab page´s table
-	* <br><b>You must access a tab before using this method</b>
-	* @param innerText
+	* This method will retrieve all Th tags present within tab's table
+	* <br>Take into consideration for example it's possible to create two account records under same AccountName
+	* <br><b>You must access a tab before using this method and should have some record available already</b>
 	*/
-	public WebElement getTdByInnerText (String innerText) {
-		WebElement ret = driver.findElement(By.xpath(tdByInnerText.replace("$InnerText", innerText))); //Within path string argument expected by "By.xpath()"  a text replacement is done 
+	public List<WebElement> getThList (){
+		return thList;
+	}
+	
+	/**
+	* This method work to know how many elements are matching under the same th innertext.
+	* <br>Take into consideration for example it's possible to create two account records under same AccountName
+	* <br><b>You must access a tab before using this method and should have some record available already</b>
+	* @param thInnerText Specifiy th innerhead (th contains tag <a> hyperlink)
+	*/
+	public List<WebElement> getThByInnerTextList (String thInnerText){
+		List <WebElement> ret = null;
+		String path = thByInnerTextList.replace("$InnerText'",thInnerText);
+		ret = driver.findElements(By.xpath(path));
 		return ret;
 	}
 	
 	/**
-	* Get a specific th from tab page´s table, this element 
-	* <br>helps to click on an account create by example
-	* <br><b>You must access a tab before using this method</b>
-	* @param innerText
+	* Get a unique th element even if there's any other row with same th's innertext
+	* <br>Take into consideration for example it's possible to create two account records under same AccountName
+	* <br><b>You must access a tab before using this method and should have some record available already</b>
+	* @param thInnerText Specifiy th innerhead (th contains tag <a> hyperlink)
+	* @param index  -> Starts by 1 (due to possible th with same innertext, if not index should be 1)
 	*/
-	public WebElement getThByInnerText (String innerText) {
-		WebElement ret = driver.findElement(By.xpath(thByInnerText.replace("$InnerText", innerText))); //Within path string argument expected by "By.xpath()"  a text replacement is done 
-		return ret;
-	}
-	
-	/**
-	* You'll get td from row that has th "innerText" from column number "columnNumber"
-	* <br><b>You must access a tab before using this method</b>
-	* <br><mark>columnNumber must start from 3 and on</mark>
-	* @param innerText
-	* @param columnNumber
-	*/
-	public WebElement getTdByInnerTextThAndTdNumber (String thInnerText, int tdColumnNum) {
-		String path =tdByInnerTextThAndTdNumber;
+	public WebElement getThByInnerText (String thInnerText, int index) {
+		WebElement ret = null;
+		String path = thByInnerText;
 		path = path.replace("$InnerText", thInnerText);
-		path = path.replace("$ColumnNumber", Integer.toString(tdColumnNum));
-		 WebElement ret = driver.findElement(By.xpath(path));
+		path = path.replace("$Index", Integer.toString(index));
 		return ret;
 	}
 	
 	/**
-	* Get menu button at the end of each row at level tab
-	* <br><b>You must access a tab before using this method</b>
-	* @param thText -> tag a hyperlink
+	* Get a unique th element even if there's any other row with same th's innertext
+	* <br>Take into consideration for example it's possible to create two account records under same AccountName
+	* <br><b>You must access a tab before using this method and should have some record available already</b>
+	* @param thInnerText -> Specifiy th innerhead (th contains tag <a> hyperlink)
+	* @param column -> Indicate column number to retrieve
+	* @param index  -> Starts by 1 (due to possible th with same innertext, if not index should be 1)
 	*/
-	public WebElement getTdMenuButton (String thText) {
-		WebElement ret = driver.findElement(By.xpath(tdMenuBtn.replace("$InnerText", thText))); //Within path string argument expected by "By.xpath()"  a text replacement is done 
+	public WebElement getTdUniqueThNColumnIndex (String thInnerText, int column, int index) {
+		WebElement ret = null;
+		String path = tdUniqueThNColumnIndex;
+		path.replace("$InnerText", thInnerText);
+		path.replace("$ColumnNumber", Integer.toString(column));
+		path.replace("$Index", Integer.toString(index));
+		ret = driver.findElement(By.xpath(path));
 		return ret;
 	}
 	
 	/**
-	* Get menu button at the end of each row at level tab
-	* <br><b>You must run getTdMenuButton method before using current method</b>
-	* @param action -> available are: <mark>Delete,Edit,Change Owner</mark>
+	* Get a unique menu button (arrow) under row of specific th
+	* <br>Take into consideration for example it's possible to create two account records under same AccountName
+	* <br><b>You must access a tab before using this method and should have some record available already</b>
+	* @param thInnerText -> Specifiy th innerhead (th contains tag <a> hyperlink)
+	* @param index  -> Starts by 1 (due to possible th with same innertext, if not index should be 1)
+	*/
+	public WebElement getTdMenuBtnBythInnerText (String thInnerText, int index) {
+		WebElement ret = null;
+		String path = tdMenuBtnBythInnerText;
+		path.replace("$InnerText", thInnerText);
+		path.replace("$Index", Integer.toString(index));
+		ret = driver.findElement(By.xpath(path));
+		return ret;
+	}
+	
+	/**
+	* Get a unique menu button under row by order (index) in html doc
+	* <br><b>You must access a tab before using this method and should have some record available already</b>
+	* @param index  -> Starts by 1
+	*/
+	public WebElement getTdMenuBtnByIndex (int index) {
+		WebElement ret = null;
+		String path = tdMenuBtnByIndex.replace("$Index", Integer.toString(index));
+		ret = driver.findElement(By.xpath(path));
+		return ret;
+		// private static final String tdMenuBtnByIndex = "(//table[@role='grid'] //tbody //tr //th //span //a /ancestor::tr /td[last()])[$Index]";
+	}
+	
+	/**
+	* Get an action button from row menu button, will get only visible one
+	* <br><b>You must access a tab before using this method and should have some record available already</b>
+	* @param action -> values available are: <mark>Edit,Delete, Change Owner</mark>
 	*/
 	public WebElement getTdMenuInnerBtn (String action) {
-		WebElement ret = driver.findElement(By.xpath(tdMenuInnerBtn.replace("$Action", action))); //Within path string argument expected by "By.xpath()"  a text replacement is done 
+		WebElement ret = null;
+		String path = tdMenuInnerBtn.replace("$Action", action);
+		ret = driver.findElement(By.xpath(path));
 		return ret;
 	}
 	
 	/**
-	* Take into consideration that is suggested to do a brief thread sleep or similar
-	* <br>until button is properly loaded
+	* Region Methods
 	*/
-	public WebElement getiFrameCancelBTN() {
-		return iFrameCancelBTN;
+	
+	/**
+	* Will generate temporary URL which appears meantime TAB is completely loaded
+	* <br><mark>Ensure updating dev_environment_id within data.properties before changing login credentials</mark>
+	* <br><mark>(Manually) Click on SalesForce landing page on image user to copy before '-dev-ed.my.salesforce.com'</mark>
+	* @param nameTab -> If tab's name is in plural will convert into singular
+	* @return URL in string format 
+	* <br>Based on template -> https://$NameDomain-dev-ed.lightning.force.com/lightning/o/$NameTab/home
+	* <br>Example https://none787-dev-ed.lightning.force.com/lightning/o/Account/home
+	* <br>Example https://pruebacom3-dev-ed.lightning.force.com/lightning/o/Account/home 
+	*/
+	public String getTabNotLoadedURL (String nameTab) throws IOException {
+		Properties prop = new Properties();
+		FileInputStream fis = new FileInputStream(System.getProperty("user.dir")+"\\src\\main\\java\\resources\\data.properties");
+		prop.load(fis);
+		String shortDomain = prop.getProperty("dev_environment_id");
+		//Start actual method
+		String url = tabNotLoadedURL;
+		String tab = nameTab;
+		String lastCharArgument = nameTab.substring(nameTab.length()-1); 
+		if(lastCharArgument.equalsIgnoreCase("s")) {
+			tab= tab.substring(0, tab.length()-1); //supress s to convert to singular
+		}
+		url=url.replace("$NameDomain", shortDomain);
+		url=url.replace("$NameTab", tab);
+		return url;
 	}
 	
 	/**
-	* Take into consideration that is suggested to do a brief thread sleep or similar
-	* <br>after getting out from an iframe to avoid duplicity issue due to load charges
+	* Will generate temporary URL which appears meantime APP is completely loaded
+	* <br><mark>Ensure updating dev_environment_id within data.properties before changing login credentials</mark>
+	* <br><mark>(Manually) Click on SalesForce landing page on image user to copy before '-dev-ed.my.salesforce.com'</mark>
+	* @return URL in string format 
+	* <br>Based on template -> https://$NameDomain-dev-ed.lightning.force.com/one.app
+	* <br> Example https://none787-dev-ed.lightning.force.com/one.app
+	* <br> Example https://pruebacom3-dev-ed.lightning.force.com/one.app
 	*/
-	public WebElement getiFrameWindow() {
-		return iFrameCancelBTN;
+	public String getAppNotLoadedURL () throws IOException {
+		Properties prop = new Properties();
+		FileInputStream fis = new FileInputStream(System.getProperty("user.dir")+"\\src\\main\\java\\resources\\data.properties");
+		prop.load(fis);
+		String shortDomain = prop.getProperty("dev_environment_id");
+		//Start actual method
+		String url = appNotLoadedURL;
+		url=url.replace("$NameDomain", shortDomain);
+		return url;
+	}
+	
+	/**
+	* Will generate temporary URL which appears meantime tab is completely loaded
+	* <br><mark>Ensure updating dev_environment_id within data.properties before changing login credentials</mark>
+	* <br><mark>(Manually) Click on SalesForce landing page on image user to copy before '-dev-ed.my.salesforce.com'</mark>
+	* @param invalidURL -> String URL
+	* @param waitSecs -> wait duration (secs)
+	*/
+	public void waitUntilURLNot (String invalidURL) {
+		this.wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(invalidURL)));
+	}
+	
+	public void jsClick (WebElement element) {
+		JavascriptExecutor js = (JavascriptExecutor) this.driver;
+		js.executeScript("arguments[0].click();", element);
+	}
+	
+	public void clickCTRLT (WebElement ele) {
+		Actions action = new Actions (driver);
+		action.keyDown(Keys.CONTROL).build().perform();
+		ele.click();
+		
+		// Alternative -> ele.sendKeys(Keys.chord(Keys.CONTROL,Keys.ENTER));
+	}
+	
+	public void waitElement (WebElement ele) {
+		this.wait.until(ExpectedConditions.visibilityOf(ele));
 	}
 
 }

@@ -23,7 +23,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class DriverFactory {
 	public WebDriver driver;
-	public WebDriverWait w; 
 	//public Properties prop; //Will be commented until prop are being use within InitilizeDriver
 
 	 /**
@@ -77,7 +76,6 @@ public class DriverFactory {
 		driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 		driver.manage().window().maximize();
 		
-		w = new WebDriverWait(driver, 5000);
 		return driver;
 
 	}

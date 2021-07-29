@@ -9,7 +9,9 @@ import cucumber.api.testng.AbstractTestNGCucumberTests;
 //@RunWith(Cucumber.class)
 @CucumberOptions(  
 	    features = "src/test/java/features",
-	    glue="stepDefinitions")
+	    glue="stepDefinitions",
+	    tags="not @Skip")
+//In case there's a tag with @Skip in some scenario won't be executed
 
 public class TestRunner extends AbstractTestNGCucumberTests  {
 

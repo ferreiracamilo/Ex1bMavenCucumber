@@ -8,6 +8,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class PoAppPageForm {
 	
@@ -15,6 +17,7 @@ public class PoAppPageForm {
 	* Region Variables
 	*/
 	public WebDriver driver;
+	public WebDriverWait wait;
 	
 	//Interactable elements level 1
 	private static final String formComboBox = "//label[.='$LabelName'] /following-sibling::div //lightning-base-combobox";
@@ -28,14 +31,24 @@ public class PoAppPageForm {
 	private static final String formCalendarItems = "//label[.='$LabelName'] /following-sibling::div //span[@class='slds-day']";
 	private static final String formSearchBoxOption = "//label[.='$LabelName'] /following-sibling::div //span[@class='slds-media__body'][.='$OptionName']";
 	private static final String formSearchBoxOptions = "//label[.='$LabelName'] /following-sibling::div //span[@class='slds-media__body']";
+	//SUPRESS IF NEXT WORKS private static final String formComboItemIsSelected = "//label[.='$LabelName'] /following-sibling::div //lightning-base-combobox-item[.='$OptionName'] //span[@class='slds-mediafigure slds-listboxoption-icon'] //lightning-icon";
+	private static final String formComboItemSelected = "//label[.='$LabelName'] /following-sibling::div //lightning-base-combobox-item //span//lightning-icon //ancestor::lightning-base-combobox-item";
 	
-	@FindBy(xpath="//button[@name='CancelEdit' or @title='Cancel']")
+	
+	//Obtain this webelement after input '1431655766' into Employees input within Account form
+	@FindBy(xpath="//div[.='Employees: value outside of valid range on numeric field: 1431655766']")
+	  private WebElement numericEmpError;
+	
+	//OLD PATH -> //button[@name='CancelEdit' or @title='Cancel']
+	@FindBy(xpath="//div[contains(@class, 'windowViewMode-normal')] //button[@name='CancelEdit' or @title='Cancel']")
 	  private WebElement formBtnCancel;
 	
-	@FindBy(xpath="//button[@name='SaveAndNew']")
+	//OLD PATH -> //button[@name='SaveAndNew']
+	@FindBy(xpath="//div[contains(@class, 'windowViewMode-normal')] //button[@name='SaveAndNew' or @title='Save & New']")
 	  private WebElement formBtnSaveNew;
 	
-	@FindBy(xpath="//button[@name='SaveEdit']")
+	//OLD PATH -> //button[@name='SaveEdit']
+	@FindBy(xpath="//div[contains(@class, 'windowViewMode-normal')] //button[@name='SaveEdit' or @title='Save']")
 	  private WebElement formBtnSave;
 	
 	/**
@@ -43,18 +56,28 @@ public class PoAppPageForm {
 	*/
 	public PoAppPageForm(WebDriver driver) {
 		this.driver=driver;
+		this.wait =new WebDriverWait(this.driver, 40);
 		PageFactory.initElements(driver, this);
 	}
 	
 	/**
 	* Region Getters
 	*/
+		
+	/**
+	* Get a WebElement warning error to comply Exercise 1b - 6
+	* <b>Obtain this webelement after input '1431655766' into Employees input within Account form</b>
+	* @return WebElement will be <b>null otherwise</b>
+	*/
+	public WebElement getnumericEmpError () {
+		return numericEmpError;
+	}
 	
 	public WebElement getFormBtnCancel() {
 		return formBtnCancel;
 	}
 	
-	public WebElement getFormBtnSaveNew() {
+	public WebElement getFormBtnSaveAndNew() {
 		return formBtnSaveNew;
 	}
 	
@@ -117,6 +140,16 @@ public class PoAppPageForm {
 	}
 	
 	/**
+	* Get dropdown element selected from specific dropdown/combobox
+	* <br><b>You must click on dropdown/combobox before using this method</b>
+	* @param labelName Specifiy name of the label above the field you want to reach
+	*/
+	public WebElement getFormComboItemSelected (String labelName) {
+		WebElement ret = driver.findElement(By.xpath(formComboItemSelected.replace("$LabelName", labelName)));
+		return ret;
+	}
+	
+	/**
 	* Get elements available after clicking a calendar input
 	* <br><b>You must click on calendar before using this method</b>
 	* @param labelName Specifiy name of the label above the field you want to reach
@@ -151,6 +184,7 @@ public class PoAppPageForm {
 		return ret;
 	}
 	
+	
 	/**
 	* Region Methods
 	*/
@@ -158,12 +192,15 @@ public class PoAppPageForm {
 	/**
 	* Alternative click to be applied which is highly recommended for form pages
 	* @param element Specify WebElement to click on
-	* @param driver Specify driver to be used
 	*/
-	public void clickCorrected (WebElement element, WebDriver driver) {
-		JavascriptExecutor js = (JavascriptExecutor) driver;
+	public void moveNclick (WebElement element) {
+		JavascriptExecutor js = (JavascriptExecutor) this.driver;
 		js.executeScript("arguments[0].scrollIntoView();", element);
 		element.click();
+	}
+	
+	public void waitElement (WebElement ele) {
+		this.wait.until(ExpectedConditions.visibilityOf(ele));
 	}
 	
 }
