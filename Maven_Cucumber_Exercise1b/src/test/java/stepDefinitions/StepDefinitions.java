@@ -56,15 +56,15 @@ public class StepDefinitions extends DriverFactory{
 	@Given("^User clicks on waffle menu button$")
 	public void user_clicks_on_waffle_menu_button() throws Throwable {
 		PoLandingPage poLP = new PoLandingPage(driver);
-    	poLP.getWaffleMenuButton().click();
+    	poLP.getWaffleMenuButton().click(); //click on waffle menu button
 	}
 
 	@Given("^User clicks on Service button$")
 	public void user_clicks_on_Service_button() throws Throwable {
 		PoLandingPage poLP = new PoLandingPage(driver);
-    	poLP.getWaffleApp("Service").click();
+    	poLP.getWaffleApp("Service").click(); //clicks on service app button from waffle menu
     	
-    	/* Verifying Service has been loaded succesfully*/
+    	/* Verifying Service has been loaded succesfully */
     	PoAppPage poAP = new PoAppPage(driver);
     	poAP.waitUntilURLAppLoaded();
 	}
@@ -229,12 +229,11 @@ public class StepDefinitions extends DriverFactory{
 		String secondTab = "";
 		
 		if(initialTab.equals("")&&secondTab.equals("")) {
+			driver.close();
 			driver.quit();
 		}else {
 			driver.close();
 		}
-		
-		
 	}
 
 	@When("^System launchs error stop sign icon due to not filling mandatory fields$")
@@ -258,22 +257,17 @@ public class StepDefinitions extends DriverFactory{
 	    tab.clickCTRLT(contactsTab);
 	}
 
-	//CHECK NOTATION
 	@Given("^User goes to new tab$")
 	public void user_goes_to_new_tab() throws Throwable {
-		
-		System.out.println("ejecuto goes to new tab");
-		
 		initialTab  = driver.getWindowHandle(); //Get Current Window Tab
 		ArrayList tabs = new ArrayList (driver.getWindowHandles()); 
 		secondTab = (String) tabs.get(1); //Get Second Window Tab (new)
 		
-		System.out.println("Method - user_goes_to_new_ta - initial tab is "+ initialTab);
-		System.out.println("Method - user_goes_to_new_ta - second tab is " + secondTab);
+		System.out.println("Method - user_goes_to_new_tab - initial tab is "+ initialTab);
+		System.out.println("Method - user_goes_to_new_tab - second tab is " + secondTab);
 		driver.switchTo().window(secondTab);
 	}
 
-	//CHECK NOTATION
 	@And("^User goes back to initial tab$")
 	public void user_goes_back_to_initial_tab() throws Throwable {
 		System.out.println("Method - user_goes_back_to_initial_tab - initial tab is "+ initialTab);
@@ -326,43 +320,45 @@ public class StepDefinitions extends DriverFactory{
 		optionType.click();
 	}
 	
-	//User modify Rating to "Cold", Upsell Opportunity to "Yes" and Type to "Other" dropdown options
-	//User verifies dropdown values Rating is "Cold", Upsell Opportunity is "Yes" and Type is "Other" on "1stAccount" 
 	@When("^User verifies dropdown values: Rating is \"([^\"]*)\", Upsell Opportunity is \"([^\"]*)\" and Type is \"([^\"]*)\" on \"([^\"]*)\"$")
     public void user_verifies_dropdown_values_rating_is_something_upsell_opportunity_is_something_and_type_is_something_on_something(String strArg1, String strArg2, String strArg3, String strArg4) throws Throwable {
 		
-		/*
-		 System.out.println("Value Rating should be " + strArg1);
+		System.out.println("Value Rating should be " + strArg1);
 		System.out.println("Value Upsell Opportunity should be " + strArg2);
 		System.out.println("Value Type should be " + strArg3);
-		 * */
 		
 		PoAppPageForm formEditAccount = new PoAppPageForm(driver);
 		
 		//Verifying comboRating
 		WebElement comboRating = formEditAccount.getFormElementLvl1("Rating", "comboBox");
+		formEditAccount.waitElement(comboRating);
 		formEditAccount.moveNclick(comboRating);
 		String valueRating = formEditAccount.getFormComboItemSelectedLvl2("Rating").getText();
-		Assert.assertEquals(valueRating , strArg1);
+		
 		
 		//Modifying comboUpsell
 		WebElement comboUpsell = formEditAccount.getFormElementLvl1("Upsell Opportunity", "comboBox");
+		formEditAccount.waitElement(comboUpsell);
 		formEditAccount.moveNclick(comboUpsell);
 		String valueUpsell = formEditAccount.getFormComboItemSelectedLvl2("Upsell Opportunity").getText();
-		Assert.assertEquals(valueUpsell , strArg2);
+		
 		
 		//Modifying comboType
 		WebElement comboType = formEditAccount.getFormElementLvl1("Type", "comboBox");
+		formEditAccount.waitElement(comboType);
 		formEditAccount.moveNclick(comboType);
 		String valueType = formEditAccount.getFormComboItemSelectedLvl2("Type").getText();
+		
+		
+		Assert.assertEquals(valueRating , strArg1);
+		Assert.assertEquals(valueUpsell , strArg2);
 		Assert.assertEquals(valueType , strArg3);
 		
-		/*
-		 System.out.println("Value Rating is " + valueRating);
+		System.out.println("Value Rating is " + valueRating);
 		System.out.println("Value Upsell Opportunity is " + valueUpsell);
 		System.out.println("Value Type is " + valueType);
-		 * */
-
+		
+		formEditAccount.getFormBtnCancel().click();
     }
 	
 	@When("^System launchs sucess notification$")
@@ -379,11 +375,9 @@ public class StepDefinitions extends DriverFactory{
 	public void user_modify_Employees_input_field_to(String arg1) throws Throwable {
 	    PoAppPageForm accountForm =  new PoAppPageForm (driver);
 	    String value = arg1;
-	    System.out.println("Value iniciando el step"+value);
 	    WebElement employeesField = accountForm.getFormElementLvl1("Employees", "textField");
 	    accountForm.eraseTextField(employeesField);
 	    accountForm.getFormElementLvl1("Employees", "textField").sendKeys(value);
-	    System.out.println("Value finalizando el step"+value);
 	}
 	
 	@Given("^User select within Contact form account name field as previous account record -> \"([^\"]*)\"$")
