@@ -109,7 +109,9 @@ public class PoAppPageForm {
 	*/
 	public WebElement getFormElementLvl1 (String labelName, String fieldType) {
 		WebElement ret = null;
-		switch(fieldType.trim().toLowerCase()){ 
+		//switch(fieldType.trim().toLowerCase())
+		String fieldTypeFix = fieldType.trim().toLowerCase();
+		switch(fieldTypeFix){ 
 			//String trim and lowercase to ensure max possibilities to match with values below
 			case "combobox":
 				ret = driver.findElement(By.xpath(lvl1formComboBox.replace("$LabelName", labelName)));
@@ -123,7 +125,7 @@ public class PoAppPageForm {
 			case "calendar":
 				ret = driver.findElement(By.xpath(lvl1formDefault.replace("$LabelName", labelName)));
 				break;
-			case "searchBox":
+			case "searchbox":
 				ret = driver.findElement(By.xpath(lvl1formDefault.replace("$LabelName", labelName)));
 				break;
 		}

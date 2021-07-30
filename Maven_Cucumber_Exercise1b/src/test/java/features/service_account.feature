@@ -53,7 +53,6 @@ Feature: App > Service App > Accounts
 
   #Exercise did not specify to fill the complete form, therefore dataprovider will contain only few possible fields
   #Exercise 1b - 7
-  @do
   Scenario Outline: Create multiple account with DataProvider
     Given User clicks on New button
     And User inputs <accountName> into Account Name input, <phoneNumber> into Phone input, <websiteName> into Website input and <tyckerSymbol> into Tycker Symbol input

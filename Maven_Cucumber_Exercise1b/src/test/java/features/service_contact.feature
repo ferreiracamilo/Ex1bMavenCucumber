@@ -12,7 +12,8 @@ Feature: App > Service App > Contact
 
   #Exercise 1b - 4
   #Will be erased contact records as 1st step
-  #Will be input also Last Name since is mandatory for Contact form, value will be Rodriguez
+  #Due to mandatory field and extra info check entries for fields on below comment
+  #Mailing Street as 18 de julio, 1st Name as Rodolfo, Salutation as Mr., Lastname as Caceres
   Scenario: Create contact record using account name from previous account created
     Given User erase all respective records
     And User clicks on Contacts creating a new tab

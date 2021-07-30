@@ -1,5 +1,7 @@
 package stepDefinitions;
 
+import java.awt.List;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
@@ -22,10 +24,23 @@ public class StepDefinitions extends DriverFactory{
 	/**
 	* Region Variables
 	*/
-	static Set<String> windows = null; // [parentid,childid,subchildId]
-	static Iterator<String> it = null;
-	static String parentId = null;
-	static String childId = null;
+	
+	String initialTab = "";
+	String secondTab = "";
+
+	/* 
+	Instanciar en clase
+	Set<String> windows = null; // [parentid,childid,subchildId]
+	Iterator<String> it = null;
+	String parentId = null;
+	String childId = null;
+	
+	Cargar value en metoodo
+	windows = driver.getWindowHandles(); // [parentid,childid,subchildId]
+	it = windows.iterator();
+	parentId = it.next();
+	childId = it.next(); 
+	*/
     
 	/**
 	* Region Steps
@@ -145,6 +160,8 @@ public class StepDefinitions extends DriverFactory{
 	@Given("^User clicks on New button$")
 	public void user_clicks_on_New_button() throws Throwable {
 		PoAppPage pageTab = new PoAppPage(driver);
+		pageTab.waitUntilURLTabLoaded(); //temporary
+		
 		WebElement newBtn = pageTab.getNewBtn("New");
 		pageTab.waitElement(newBtn);
 		newBtn.click();
@@ -222,6 +239,7 @@ public class StepDefinitions extends DriverFactory{
 	@Then("^Close browser$")
 	public void close_browser() throws Throwable {
 		driver.close();
+		System.out.println("cierro browser");
 	}
 
 	@When("^System launchs error stop sign icon due to not filling mandatory fields$")
@@ -240,28 +258,33 @@ public class StepDefinitions extends DriverFactory{
 
 	@Given("^User clicks on Contacts creating a new tab$")
 	public void user_clicks_on_Contacts_creating_a_new_tab() throws Throwable {
-	    System.out.println("Create new tab temporal code");
 	    PoAppPage tab = new PoAppPage(driver);
 	    WebElement contactsTab = tab.getOneTab("Contacts");
-	    contactsTab.sendKeys(Keys.chord(Keys.CONTROL,Keys.ENTER)); //check if this is working
-	    System.out.println("Abri nueva tab");
-	    windows = driver.getWindowHandles(); // [parentid,childid,subchildId]
-        it = windows.iterator();
-        parentId = it.next();
-        childId = it.next();
+	    tab.clickCTRLT(contactsTab);
 	}
 
+	//CHECK NOTATION
 	@Given("^User goes to new tab$")
 	public void user_goes_to_new_tab() throws Throwable {
-		System.out.println("Goes to new tab");
-		driver.switchTo().window(childId);
+		
+		System.out.println("ejecuto goes to new tab");
+		
+		initialTab  = driver.getWindowHandle(); //Get Current Window Tab
+		ArrayList tabs = new ArrayList (driver.getWindowHandles()); 
+		secondTab = (String) tabs.get(1); //Get Second Window Tab (new)
+		
+		System.out.println("Method - user_goes_to_new_ta - initial tab is "+ initialTab);
+		System.out.println("Method - user_goes_to_new_ta - second tab is " + secondTab);
+		driver.switchTo().window(secondTab);
 	}
 
+	//CHECK NOTATION
 	@And("^User goes back to initial tab$")
 	public void user_goes_back_to_initial_tab() throws Throwable {
-	    //Can be And or Given, check which works
-		System.out.println("Goes to back to initial tab");
-		driver.switchTo().window(parentId);
+		System.out.println("Method - user_goes_back_to_initial_tab - initial tab is "+ initialTab);
+		System.out.println("Method - user_goes_back_to_initial_tab - second tab is " + secondTab);
+		driver.switchTo().window(initialTab);
+		
 	}
 
 	@Given("^User click menu \\(arrow down\\) and click Edit button from row which contains \"([^\"]*)\"$")
@@ -284,6 +307,7 @@ public class StepDefinitions extends DriverFactory{
 	    /* Wait until form is loaded after clicking edit */
 	    PoAppPageForm form = new PoAppPageForm(driver);
 	    form.waitUntilFormLoaded();
+	    
 	}
 
 	@Given("^User modify Rating to \"([^\"]*)\", Upsell Opportunity to \"([^\"]*)\" and Type to \"([^\"]*)\" dropdown options$")
@@ -359,30 +383,41 @@ public class StepDefinitions extends DriverFactory{
 	public void user_select_as_Account_name_the_record_previously_created_as(String arg1) throws Throwable {
 	    //Exercise 1b - 4 part
 		PoAppPageForm contactForm = new PoAppPageForm(driver);
-		WebElement accNameSearchBox = contactForm.getFormElementLvl1("Account Name", "searchBox");
+		contactForm.waitUntilFormLoaded();
+		
+		//Mailing street
+		contactForm.getFormElementLvl1("Mailing Street", "textArea").sendKeys("18 de julio");;
+		
+		//1st Name field
+		contactForm.getFormElementLvl1("First Name", "textField").sendKeys("Rodolfo");
+		
+		//Salutation field
+		contactForm.getFormElementLvl1("Salutation", "comboBox").click();
+		contactForm.getFormComboItemLvl2("Salutation", "Mr.").click();
+				
+		//Last Name field
+		contactForm.getFormElementLvl1("*Last Name", "textField").sendKeys("Caceres");
+		
+		
+		WebElement accNameSearchBox = contactForm.getFormElementLvl1("Account Name", "searchBox ");
+		contactForm.waitElement(accNameSearchBox);
 		contactForm.moveNclick(accNameSearchBox);
+		//accNameSearchBox.click();
 		
 		WebElement accountToSelect = contactForm.getSuggestedTextOptionLvl2("Account Name", arg1);
-		contactForm.moveNclick(accountToSelect);
-		
-		WebElement lastNameTxtField = contactForm.getFormElementLvl1("*Last Name", "textField");
-		lastNameTxtField.sendKeys("Rodriguez");
+		accountToSelect.click();
+			
 	}
 	
-	/*NOTE CHECK IF STEPS BELOW ARE CORRECTLY WRITTEN IN GHERKIN*/
 	@And("^User inputs (.+) into Account Name input, (.+) into Phone input, (.+) into Website input and (.+) into Tycker Symbol input$")
 	public void user_inputs_into_account_name_input_into_phone_input_into_website_input_and_into_tycker_symbol_input(
 			String accountname, String phonenumber, String websitename, String tyckersymbol) throws Throwable {
 			PoAppPageForm accountForm = new PoAppPageForm (driver);
 			
 			accountForm.getFormElementLvl1("*Account Name", "textField").sendKeys(accountname);
-			
 			accountForm.getFormElementLvl1("Phone", "textField").sendKeys(phonenumber);
-			
 			accountForm.getFormElementLvl1("Website", "textField").sendKeys(websitename);
-			
 			accountForm.getFormElementLvl1("Ticker Symbol", "textField").sendKeys(tyckersymbol);
-			
 	}
 
 }
