@@ -14,6 +14,7 @@ Feature: App > Service App > Accounts
   #Additional requirement: value for SLA Expiration Date must be clicked in calendar.
   #Will be erase every account before running 1st scenario
   #Exercise 1b - 2
+  @do
   Scenario: Create Account with full fields
     Given User erase all respective records
     And User clicks on New button
@@ -33,6 +34,7 @@ Feature: App > Service App > Accounts
   #Fields to modified are Rating, Upsell Opportunity, Type
   #CHECK IF WORK WITH REPEATED STEP IN LINE 43
   #Exercise 1b - 5
+  @do
   Scenario: Modify values of Rating, Upsell Opportunity and Other from account record
     Given User click menu (arrow down) and click Edit button from row which contains "1stAccount"
     And User modify Rating to "Cold", Upsell Opportunity to "Yes" and Type to "Other" dropdown options

@@ -224,7 +224,17 @@ public class StepDefinitions extends DriverFactory{
 
 	@Then("^Close browser$")
 	public void close_browser() throws Throwable {
-		driver.close();
+		
+		String initialTab = "";
+		String secondTab = "";
+		
+		if(initialTab.equals("")&&secondTab.equals("")) {
+			driver.quit();
+		}else {
+			driver.close();
+		}
+		
+		
 	}
 
 	@When("^System launchs error stop sign icon due to not filling mandatory fields$")
@@ -321,6 +331,12 @@ public class StepDefinitions extends DriverFactory{
 	@When("^User verifies dropdown values: Rating is \"([^\"]*)\", Upsell Opportunity is \"([^\"]*)\" and Type is \"([^\"]*)\" on \"([^\"]*)\"$")
     public void user_verifies_dropdown_values_rating_is_something_upsell_opportunity_is_something_and_type_is_something_on_something(String strArg1, String strArg2, String strArg3, String strArg4) throws Throwable {
 		
+		/*
+		 System.out.println("Value Rating should be " + strArg1);
+		System.out.println("Value Upsell Opportunity should be " + strArg2);
+		System.out.println("Value Type should be " + strArg3);
+		 * */
+		
 		PoAppPageForm formEditAccount = new PoAppPageForm(driver);
 		
 		//Verifying comboRating
@@ -340,6 +356,13 @@ public class StepDefinitions extends DriverFactory{
 		formEditAccount.moveNclick(comboType);
 		String valueType = formEditAccount.getFormComboItemSelectedLvl2("Type").getText();
 		Assert.assertEquals(valueType , strArg3);
+		
+		/*
+		 System.out.println("Value Rating is " + valueRating);
+		System.out.println("Value Upsell Opportunity is " + valueUpsell);
+		System.out.println("Value Type is " + valueType);
+		 * */
+
     }
 	
 	@When("^System launchs sucess notification$")

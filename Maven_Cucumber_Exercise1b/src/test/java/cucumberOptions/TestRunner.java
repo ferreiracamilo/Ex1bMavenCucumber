@@ -8,9 +8,18 @@ import cucumber.api.testng.AbstractTestNGCucumberTests;
 @RunWith(Cucumber.class)
 @CucumberOptions(  
 	    features = "src/test/java/features",
+	    glue="stepDefinitions"
+)
+
+/* 
+ to use @do tags implement
+ 
+ 
+ @CucumberOptions(  
+	    features = "src/test/java/features",
 	    glue="stepDefinitions",
 	    tags = "@do")
-//In case there's a tag with @Skip in some scenario won't be executed
+ * */
 
 public class TestRunner extends AbstractTestNGCucumberTests  {
 
