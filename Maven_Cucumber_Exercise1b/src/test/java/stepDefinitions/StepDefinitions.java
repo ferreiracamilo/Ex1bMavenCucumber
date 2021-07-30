@@ -27,20 +27,6 @@ public class StepDefinitions extends DriverFactory{
 	
 	String initialTab = "";
 	String secondTab = "";
-
-	/* 
-	Instanciar en clase
-	Set<String> windows = null; // [parentid,childid,subchildId]
-	Iterator<String> it = null;
-	String parentId = null;
-	String childId = null;
-	
-	Cargar value en metoodo
-	windows = driver.getWindowHandles(); // [parentid,childid,subchildId]
-	it = windows.iterator();
-	parentId = it.next();
-	childId = it.next(); 
-	*/
     
 	/**
 	* Region Steps
@@ -239,7 +225,6 @@ public class StepDefinitions extends DriverFactory{
 	@Then("^Close browser$")
 	public void close_browser() throws Throwable {
 		driver.close();
-		System.out.println("cierro browser");
 	}
 
 	@When("^System launchs error stop sign icon due to not filling mandatory fields$")
@@ -284,7 +269,6 @@ public class StepDefinitions extends DriverFactory{
 		System.out.println("Method - user_goes_back_to_initial_tab - initial tab is "+ initialTab);
 		System.out.println("Method - user_goes_back_to_initial_tab - second tab is " + secondTab);
 		driver.switchTo().window(initialTab);
-		
 	}
 
 	@Given("^User click menu \\(arrow down\\) and click Edit button from row which contains \"([^\"]*)\"$")

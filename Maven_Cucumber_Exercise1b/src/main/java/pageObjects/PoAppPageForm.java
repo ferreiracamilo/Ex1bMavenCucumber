@@ -36,7 +36,7 @@ public class PoAppPageForm {
 	private static final String lvl2formSearchBoxOption = "//label[.='$LabelName'] /following-sibling::div //li //lightning-base-combobox-item /descendant-or-self::span[@class='slds-truncate' and .='$OptionName'][1]";
 	private static final String lvl2formSearchBoxOptions = "//label[.='$LabelName'] /following-sibling::div //li //lightning-base-combobox-item /descendant-or-self::span[@class='slds-truncate'][1]";
 	private static final String lvl2formComboItemSelected = "//label[.='$LabelName'] /following-sibling::div //lightning-base-combobox-item //span//lightning-icon //ancestor::lightning-base-combobox-item";
-	//SUPRESS IF NEXT WORKS private static final String formComboItemIsSelected = "//label[.='$LabelName'] /following-sibling::div //lightning-base-combobox-item[.='$OptionName'] //span[@class='slds-mediafigure slds-listboxoption-icon'] //lightning-icon";
+	//SUPRESS IF NEXT WORKS private static final String formComboItemIsSelected = "//label[.='$LabelName'] /following-sibling::div //lightning-base-combobox-item[.='$ComboOption'] //span//lightning-icon //ancestor::lightning-base-combobox-item";
 	
 	
 	@FindBy(xpath="//button[contains(@class,'page-error-button')]")
