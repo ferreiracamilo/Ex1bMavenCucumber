@@ -17,6 +17,9 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+/**
+ * Developed to manage App and its respective tabs
+ * */
 public class PoAppPage {
 	
 	/**
@@ -25,7 +28,7 @@ public class PoAppPage {
 	public WebDriver driver;
 	public WebDriverWait wait; //Temporary to be decide if to be implemented permanently or not
 	
-	private  static final String xpathBtnNew = "//ul[contains(@class, 'branding-actions slds-button-group')] //li[@class='slds-button slds-button--neutral'] //a[@title='$btnTitle'] //ancestor::li"; //Try with ancestor li and without it
+	private  static final String xpathBtnNew = "//ul[contains(@class, 'branding-actions slds-button-group')] //li[@class='slds-button slds-button--neutral'] //a[@title='$btnTitle']";  
 	private  static final String xpathOneTab = "//one-app-nav-bar-item-root[@data-assistive-id='operationId'] //a[contains(@href,'/lightning/') and @tabindex='0'] //span[.='$TabName'] //ancestor::one-app-nav-bar-item-root";
 	private static final String thByInnerTextList = "//table[@role='grid'] /tbody /tr /th /span //a[.='$InnerText']";
 	private static final String thByInnerText = "(//table[@role='grid'] /tbody /tr /th /span //a[.='$InnerText'])[$Index]";
@@ -35,6 +38,15 @@ public class PoAppPage {
 	private static final String tdMenuInnerBtn = "//div[contains(@class,'visible')] //div[@role='menu'] //div[@title='$Action'] /ancestor::a";
 	private static final String tabNotLoadedURL = "https://$NameDomain-dev-ed.lightning.force.com/lightning/o/$NameTab/home";
 	private static final String appNotLoadedURL = "https://$NameDomain-dev-ed.lightning.force.com/one.app";
+	
+	/* EXPERIMENTAL without getter temporarily */
+	//Path to be implemented in future improvement, gives the possibility to get inner text of current selected tab. Tab must be loaded completely previosly
+	@FindBy (xpath = "//one-app-nav-bar-item-root[contains(@class,'slds-is-active')] //span")
+	private WebElement tabSelected;
+
+	//Looks for a specific tab by its inner text and being selected
+	private static final String tabLabelSelected = "//one-app-nav-bar-item-root[contains(@class,'slds-is-active')] //span[.='$TabName']"; 
+	/* EXPERIMENTAL */
 	
 	@FindBy (xpath = "//table[@role='grid'] /tbody /tr /th /span //a")
 	private List<WebElement> thList;
@@ -64,7 +76,7 @@ public class PoAppPage {
 	 */
 	public PoAppPage(WebDriver driver) {
 		this.driver=driver;
-		this.wait =new WebDriverWait(this.driver, 40);
+		this.wait =new WebDriverWait(this.driver, 80);
 		PageFactory.initElements(driver, this);
 	}
 	
@@ -181,9 +193,9 @@ public class PoAppPage {
 	public WebElement getTdUniqueThNColumnIndex (String thInnerText, int column, int index) {
 		WebElement ret = null;
 		String path = tdUniqueThNColumnIndex;
-		path.replace("$InnerText", thInnerText);
-		path.replace("$ColumnNumber", Integer.toString(column));
-		path.replace("$Index", Integer.toString(index));
+		path = path.replace("$InnerText", thInnerText);
+		path = path.replace("$ColumnNumber", Integer.toString(column));
+		path = path.replace("$Index", Integer.toString(index));
 		ret = driver.findElement(By.xpath(path));
 		return ret;
 	}
@@ -198,8 +210,8 @@ public class PoAppPage {
 	public WebElement getTdMenuBtnBythInnerText (String thInnerText, int index) {
 		WebElement ret = null;
 		String path = tdMenuBtnBythInnerText;
-		path.replace("$InnerText", thInnerText);
-		path.replace("$Index", Integer.toString(index));
+		path = path.replace("$InnerText", thInnerText);
+		path = path.replace("$Index", Integer.toString(index));
 		ret = driver.findElement(By.xpath(path));
 		return ret;
 	}
@@ -234,61 +246,21 @@ public class PoAppPage {
 	*/
 	
 	/**
-	* Will generate temporary URL which appears meantime TAB is completely loaded
-	* <br><mark>Ensure updating dev_environment_id within data.properties before changing login credentials</mark>
-	* <br><mark>(Manually) Click on SalesForce landing page on image user to copy before '-dev-ed.my.salesforce.com'</mark>
-	* @param nameTab -> If tab's name is in plural will convert into singular
-	* @return URL in string format 
-	* <br>Based on template -> https://$NameDomain-dev-ed.lightning.force.com/lightning/o/$NameTab/home
-	* <br>Example https://none787-dev-ed.lightning.force.com/lightning/o/Account/home
-	* <br>Example https://pruebacom3-dev-ed.lightning.force.com/lightning/o/Account/home 
+	* Verify tab within app url has loaded successfully
+	* As reference current Home Page URL is -> https://none787-dev-ed.lightning.force.com/lightning/setup/SetupOneHome/home
+	* Every time you click on an app you'll get the link containing "-dev-ed.lightning.force.com/lightning/page/chatter" 
 	*/
-	public String getTabNotLoadedURL (String nameTab) throws IOException {
-		Properties prop = new Properties();
-		FileInputStream fis = new FileInputStream(System.getProperty("user.dir")+"\\src\\main\\java\\resources\\data.properties");
-		prop.load(fis);
-		String shortDomain = prop.getProperty("dev_environment_id");
-		//Start actual method
-		String url = tabNotLoadedURL;
-		String tab = nameTab;
-		String lastCharArgument = nameTab.substring(nameTab.length()-1); 
-		if(lastCharArgument.equalsIgnoreCase("s")) {
-			tab= tab.substring(0, tab.length()-1); //supress s to convert to singular
-		}
-		url=url.replace("$NameDomain", shortDomain);
-		url=url.replace("$NameTab", tab);
-		return url;
+	public void waitUntilURLTabLoaded () {
+		//this.wait.until(ExpectedConditions.urlContains("?"));
+		this.wait.until(ExpectedConditions.or(ExpectedConditions.urlContains("?"),ExpectedConditions.urlContains("dev-ed.lightning.force.com/lightning/page/home"),ExpectedConditions.urlContains("-dev-ed.lightning.force.com/lightning/page/chatter")));
 	}
 	
 	/**
-	* Will generate temporary URL which appears meantime APP is completely loaded
-	* <br><mark>Ensure updating dev_environment_id within data.properties before changing login credentials</mark>
-	* <br><mark>(Manually) Click on SalesForce landing page on image user to copy before '-dev-ed.my.salesforce.com'</mark>
-	* @return URL in string format 
-	* <br>Based on template -> https://$NameDomain-dev-ed.lightning.force.com/one.app
-	* <br> Example https://none787-dev-ed.lightning.force.com/one.app
-	* <br> Example https://pruebacom3-dev-ed.lightning.force.com/one.app
+	* Before hand having the knowledge that only Home and Chatter tabs won't have '?' after are loaded successfully
+	* <br>Method reviews URL has '?' or the explicits links of two previous tabs mentioned
 	*/
-	public String getAppNotLoadedURL () throws IOException {
-		Properties prop = new Properties();
-		FileInputStream fis = new FileInputStream(System.getProperty("user.dir")+"\\src\\main\\java\\resources\\data.properties");
-		prop.load(fis);
-		String shortDomain = prop.getProperty("dev_environment_id");
-		//Start actual method
-		String url = appNotLoadedURL;
-		url=url.replace("$NameDomain", shortDomain);
-		return url;
-	}
-	
-	/**
-	* Will generate temporary URL which appears meantime tab is completely loaded
-	* <br><mark>Ensure updating dev_environment_id within data.properties before changing login credentials</mark>
-	* <br><mark>(Manually) Click on SalesForce landing page on image user to copy before '-dev-ed.my.salesforce.com'</mark>
-	* @param invalidURL -> String URL
-	* @param waitSecs -> wait duration (secs)
-	*/
-	public void waitUntilURLNot (String invalidURL) {
-		this.wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(invalidURL)));
+	public void waitUntilURLAppLoaded () {
+		this.wait.until(ExpectedConditions.urlContains("-dev-ed.lightning.force.com/lightning/page/home"));
 	}
 	
 	public void jsClick (WebElement element) {
