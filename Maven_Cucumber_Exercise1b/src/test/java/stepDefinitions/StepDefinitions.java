@@ -17,9 +17,9 @@ import pageObjects.PoAppPage;
 import pageObjects.PoAppPageForm;
 import pageObjects.PoLandingPage;
 import pageObjects.PoLoginPage;
-import resources.DriverFactory;
+import resources.Base;
 
-public class StepDefinitions extends DriverFactory{
+public class StepDefinitions extends Base{
 	
 	/**
 	* Region Variables

@@ -1,35 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testng-results total="1" passed="1" failed="0" skipped="0">
+<testng-results ignored="0" total="1" passed="1" failed="0" skipped="0">
   <reporter-output>
   </reporter-output>
-  <suite started-at="2021-07-30T20:15:40Z" name="Default suite" finished-at="2021-07-30T20:16:55Z" duration-ms="74501">
+  <suite started-at="2021-08-12T10:54:53 UYT" name="Suite" finished-at="2021-08-12T10:56:07 UYT" duration-ms="73762">
     <groups>
-      <group name="cucumber">
-        <method signature="AbstractTestNGCucumberTests.feature(cucumber.api.testng.CucumberFeatureWrapper)[pri:0, instance:cucumberOptions.TestRunner@4b7dc788]" name="feature" class="cucumber.api.testng.AbstractTestNGCucumberTests"/>
-      </group> <!-- cucumber -->
     </groups>
-    <test started-at="2021-07-30T20:15:40Z" name="Default test" finished-at="2021-07-30T20:16:55Z" duration-ms="74501">
-      <class name="cucumberOptions.TestRunner">
-        <test-method is-config="true" signature="setUpClass()[pri:0, instance:cucumberOptions.TestRunner@4b7dc788]" started-at="2021-07-30T17:15:40Z" name="setUpClass" finished-at="2021-07-30T17:15:41Z" duration-ms="430" status="PASS">
+    <test started-at="2021-08-12T10:54:53 UYT" name="Test" finished-at="2021-08-12T10:56:07 UYT" duration-ms="73762">
+      <class name="testNGclasses.ServiceContact">
+        <test-method is-config="true" signature="initialize_the_browser_and_login()[pri:0, instance:testNGclasses.ServiceContact@32b260fa]" started-at="2021-08-12T10:54:53 UYT" name="initialize_the_browser_and_login" finished-at="2021-08-12T10:55:10 UYT" duration-ms="16467" status="PASS">
           <reporter-output>
           </reporter-output>
-        </test-method> <!-- setUpClass -->
-        <test-method signature="feature(cucumber.api.testng.CucumberFeatureWrapper)[pri:0, instance:cucumberOptions.TestRunner@4b7dc788]" started-at="2021-07-30T17:15:41Z" name="feature" description="Runs Cucumber Feature" data-provider="features" finished-at="2021-07-30T17:16:55Z" duration-ms="73907" status="PASS">
-          <params>
-            <param index="0">
-              <value>
-                <![CDATA[App > Service App > Accounts]]>
-              </value>
-            </param>
-          </params>
+        </test-method> <!-- initialize_the_browser_and_login -->
+        <test-method signature="tcPositiveNewTabCreateContact()[pri:0, instance:testNGclasses.ServiceContact@32b260fa]" started-at="2021-08-12T10:55:10 UYT" name="tcPositiveNewTabCreateContact" finished-at="2021-08-12T10:56:07 UYT" duration-ms="57171" status="PASS">
           <reporter-output>
           </reporter-output>
-        </test-method> <!-- feature -->
-        <test-method is-config="true" signature="tearDownClass()[pri:0, instance:cucumberOptions.TestRunner@4b7dc788]" started-at="2021-07-30T17:16:55Z" name="tearDownClass" finished-at="2021-07-30T17:16:55Z" duration-ms="8" status="PASS">
+        </test-method> <!-- tcPositiveNewTabCreateContact -->
+        <test-method is-config="true" signature="close_browser()[pri:0, instance:testNGclasses.ServiceContact@32b260fa]" started-at="2021-08-12T10:56:07 UYT" name="close_browser" finished-at="2021-08-12T10:56:07 UYT" duration-ms="78" status="PASS">
           <reporter-output>
           </reporter-output>
-        </test-method> <!-- tearDownClass -->
-      </class> <!-- cucumberOptions.TestRunner -->
-    </test> <!-- Default test -->
-  </suite> <!-- Default suite -->
+        </test-method> <!-- close_browser -->
+      </class> <!-- testNGclasses.ServiceContact -->
+    </test> <!-- Test -->
+  </suite> <!-- Suite -->
 </testng-results>

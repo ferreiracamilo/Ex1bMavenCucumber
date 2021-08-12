@@ -21,7 +21,7 @@ import org.openqa.selenium.opera.OperaDriver;
 import org.openqa.selenium.opera.OperaOptions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class DriverFactory {
+public class Base {
 	public WebDriver driver;
 	//public Properties prop; //Will be commented until prop are being use within InitilizeDriver
 
@@ -73,7 +73,7 @@ public class DriverFactory {
 			driver = new OperaDriver(options);
 		}
 
-		driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+		driver.manage().timeouts().implicitlyWait(50, TimeUnit.SECONDS);
 		driver.manage().window().maximize();
 		
 		return driver;
